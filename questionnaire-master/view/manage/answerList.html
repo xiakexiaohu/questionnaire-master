@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>已答问卷</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css">
+
+    <!--引入vue样式-->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style scoped>
+        .handle-box{
+            margin-bottom: 20px;
+        }
+        .handle-select{
+            width: 120px;
+        }
+        .handle-input{
+            width: 300px;
+            display: inline-block;
+        }
+
+    </style>
+    <style>
+
+        .ui.container {
+            padding-top: 1.5rem;
+            width: 75%;
+        }
+
+        .ui.container[v-cloak] {
+            display: none;
+        }
+
+        .ui.form {
+            margin-top: 1.5rem;
+        }
+        .layout{
+            border: 1px solid #d7dde4;
+            background: #f5f7f9;
+            position: relative;
+            border-radius: 4px;
+            min-height: 100%;
+        }
+        .ivu-layout-header {
+            z-index: 1024;
+        }
+        .layout-logo{
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            background: #5b6270;
+            border-radius: 3px;
+            float: left;
+            position: relative;
+            top: 15px;
+            left: 20px;
+            text-align: center;
+            color: #fff;
+        }
+        .layout-nav{
+            width: 420px;
+            margin: 0 auto;
+            margin-right: 20px;
+        }
+        .ivu-layout-footer {
+            position: absolute;
+            bottom:0;
+            width: 100%;
+        }
+        .layout-footer-center{
+            text-align: center;
+        }
+
+        /* 自定义样式  */
+        .table-wrapper {
+            min-height: 520px;
+            position: relative;
+        }
+        .page-wrapper {
+            position: absolute;
+            left: 0;
+            bottom:-45px;
+            width:100%;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 20px;
+        }
+        .search-wrapper {
+            padding: 20px;
+        }
+        .search-box {
+            width: 300px;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="ui container" id="sb">
+    <h2 >{{questionnaire.title}}</h2>
+    <div class="handle-box">
+        <el-button v-on:click="delAll">批量删除</el-button>
+        <!--v-model实现数据双向绑定-->
+        <el-input v-model="keywords"  placeholder="筛选关键词" class="handle-input mr10"></el-input>
+        <!--@ 只是一个 v-on: 的缩写，为了书写方便。-->
+        <el-button type="primary" icon="serach" v-on:click="search">搜索</el-button>
+
+    </div>
+    <!--element-ui通过selection-change实现批量删除-->
+    <el-table :data="searchData.slice((currentPage-1)*pageSize,currentPage*pageSize)" class="ui green very padded table" style="width: 100%" ref="multipleTable" v-on:selection-change="handleSelectionChange"  v-if="questionsValidate.length>0">
+
+        <el-table-column  type="selection" width="85"></el-table-column>
+        <!--限定显示的属性列个数,7-->
+        <template v-for="(col,index) in questionsValidate.slice(0,6)">
+            <el-table-column :prop="col._id" :label="col.content" min-width="100" >
+            </el-table-column>
+        </template>
+
+        <el-table-column align="center" label="操作" width="200" >
+            <template scope="scope" >
+                <el-button size="small" v-on:click="handleDetail(scope.$index,scope.row)">详情</el-button>
+
+                <el-button size="small" style="background: red"  v-on:click="deleteAnswer(scope.$index,scope.row)" v-if="isAdmin">删除</el-button>
+            </template>
+        </el-table-column>
+        <!--弹框只显示弹层但是不显示框，仔细查看了文档，发现有个关键属性append-to-body，他默认是false，我们给他设置为true-->
+        <el-dialog title="详情" :visible.sync="dialogFormVisible" width="30%" :before-close="handleClose" :append-to-body="true">
+            <!--html遍历对象-->
+            <div v-for="(value,key,index) in specifyData">
+                <el-label class="layout-nav">{{key}}:</el-label><el-button class="handle-box">{{value}}</el-button>
+            </div>
+
+        </el-dialog>
+
+    </el-table>
+
+    <div class="ui message" v-else>
+    该问卷中没有题目
+    </div>
+    <!--分页按钮 -->
+    <div style="text-align:center;margin-top:30px">
+        <el-pagination background layout="prev,pager,next" :total="searchData.length" @current-change="current_change">
+        </el-pagination>
+    </div>
+
+    <!--<table class="ui green  very padded celled table" v-if="questionsValidate.length>0" >-->
+        <!--<thead>-->
+        <!--<th v-for="question in questionsValidate" >-->
+                <!--{{question.content}}-->
+        <!--</th>-->
+        <!--<th>操作</th>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+        <!--<tr v-for="ans in answers">-->
+            <!--<td v-for="san in ans.newContent">-->
+                <!--&lt;!&ndash;<span >&ndash;&gt;-->
+                    <!--&lt;!&ndash;{{san}}&ndash;&gt;-->
+                <!--&lt;!&ndash;</span>&ndash;&gt;-->
+                <!--{{san}}-->
+            <!--</td>-->
+            <!--<td width="180">-->
+                <!--<button class="ui button" v-on:click="detailAnswer(index,option)">详情</button>-->
+                <!--&lt;!&ndash;对于传递参数的function不需要{{}}&ndash;&gt;-->
+                <!--<button class="ui red floated button" v-on:click="deleteAnswer(ans._id)">删除</button>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+    <!--</table>-->
+    <!--<div class="ui message" v-else>-->
+        <!--该问卷中没有题目-->
+    <!--</div>-->
+</div>
+<!--引入vue-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.10/vue.min.js"></script>-->
+
+<!--引入js-->
+<!-- import Vue before Element -->
+<!--vue2.0支持用mounted代替1.0版本的ready-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.10/vue.min.js"></script>-->
+
+<!--<script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+<!--<script src=" https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.8/vue.min.js"></script>-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.9/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/0.10.1/fetch.min.js"></script>
+<script src="/manage/js/notie.js"></script>
+<script src="/manage/js/answerList.js"></script>
+
+</body>
+</html>
