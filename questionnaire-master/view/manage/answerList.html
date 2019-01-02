@@ -116,11 +116,11 @@
             </el-table-column>
         </template>
 
-        <el-table-column align="center" label="操作" width="200" >
-            <template scope="scope" >
-                <el-button size="small" v-on:click="handleDetail(scope.$index,scope.row)">详情</el-button>
+        <el-table-column align="left" label="操作" width="200" >
+            <template scope="scope">
+                <el-button size="small"  v-on:click="handleDetail(scope.$index,scope.row)">详情</el-button>
 
-                <el-button size="small" style="background: red"  v-on:click="deleteAnswer(scope.$index,scope.row)" v-if="isAdmin">删除</el-button>
+                <el-button size="small" style="background:red"  v-on:click="deleteAnswer(scope.$index,scope.row)" v-if="isAdmin">删除</el-button>
             </template>
         </el-table-column>
         <!--弹框只显示弹层但是不显示框，仔细查看了文档，发现有个关键属性append-to-body，他默认是false，我们给他设置为true-->
