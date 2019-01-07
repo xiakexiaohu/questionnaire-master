@@ -24,9 +24,11 @@ exports.loginPage = function (req, res) {
     })
 };
 
+var url=require("url");
 exports.login = function (req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
+    var username = url.parse(req.url,true).query.username;
+    var password = url.parse(req.url,true).query.password;
+
     Admin.findOne({username: username})
         .exec(function (err, user) {
             if (user && user.password == CryptoJS.MD5(password).toString()) {

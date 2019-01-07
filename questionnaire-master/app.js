@@ -29,8 +29,9 @@ var Admin = require('./controllers/admin');
 
 
 app.get('/', Admin.homePage);
-app.get('/manage/login', Admin.loginPage);
-app.post('/manage/login', Admin.login);
+app.get('/manage/login_page', Admin.loginPage);
+// app.post('/manage/login', Admin.login);
+app.get('/manage/login', Admin.login);
 app.get('/manage/logout', Admin.loginRequired, Admin.logout);
 app.get('/manage', Admin.loginRequired, Questionnaire.listPage);
 app.get('/manage/questionnaire/add', Admin.loginRequired, Questionnaire.addPage);
@@ -74,6 +75,7 @@ app.use(function (err, req, res, next) {
     res.send(err.message);
 });
 
-var port = process.env.PORT || 8080;
+
+var port = process.env.PORT || 8081;
 console.log('listen port ======== ' + port)
 app.listen(port);
