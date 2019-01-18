@@ -32,6 +32,10 @@ app.get('/', Admin.homePage);
 app.get('/manage/login_page', Admin.loginPage);
 // app.post('/manage/login', Admin.login);
 app.get('/manage/login', Admin.login);
+app.get('/manage/add',Admin.add);
+app.get('/manage/delete',Admin.delete);
+app.get('/manage/update', Admin.update);
+
 app.get('/manage/logout', Admin.loginRequired, Admin.logout);
 app.get('/manage', Admin.loginRequired, Questionnaire.listPage);
 app.get('/manage/questionnaire/add', Admin.loginRequired, Questionnaire.addPage);

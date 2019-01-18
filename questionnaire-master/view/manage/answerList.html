@@ -99,7 +99,7 @@
 <div class="ui container" id="sb">
     <h2 >{{questionnaire.title}}</h2>
     <div class="handle-box">
-        <el-button v-on:click="delAll">批量删除</el-button>
+        <el-button v-on:click="delAll" v-if="isAdmin">批量删除</el-button>
         <!--v-model实现数据双向绑定-->
         <el-input v-model="keywords"  placeholder="筛选关键词" class="handle-input mr10"></el-input>
         <!--@ 只是一个 v-on: 的缩写，为了书写方便。-->

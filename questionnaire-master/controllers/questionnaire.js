@@ -19,7 +19,7 @@ exports.editPage = function (req, res) {
 };
 
 exports.add = function (req, res, next) {
-    var questionnaire = new Questionnaire(req.body);
+    var questionnaire = new Questionnaire();
     questionnaire.save(function (err) {
         if (err) {
             return res.json({

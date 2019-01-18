@@ -42,8 +42,8 @@ new Vue({
                 .then(function (json) {
                     //admin.js中定义了req.session.user=username;
                     self.userInfo = json.userInfo;
-                    if (self.userInfo == "admin") {
-                        //超级管理员，具有删除权限
+                    if (self.userInfo.indexOf("admin@")==0) {
+                        //超级管理员，具有删除权限,因为医生客户端以admin@邮箱作为账号开头
                         self.isAdmin=true;
                     }
                     self.questionnaire = json.questionnaire;
