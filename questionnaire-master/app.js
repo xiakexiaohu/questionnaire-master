@@ -29,9 +29,11 @@ var Admin = require('./controllers/admin');
 
 
 app.get('/', Admin.homePage);
-app.get('/manage/login_page', Admin.loginPage);
-// app.post('/manage/login', Admin.login);
-app.get('/manage/login', Admin.login);
+app.get('/manage/login', Admin.loginPage);
+//原来登陆页面
+app.post('/manage/login', Admin.login);
+//通过url直接登陆页面
+app.get('/manage/loginURL', Admin.loginURL);
 app.get('/manage/add',Admin.add);
 app.get('/manage/delete',Admin.delete);
 app.get('/manage/update', Admin.update);
@@ -80,6 +82,6 @@ app.use(function (err, req, res, next) {
 });
 
 
-var port = process.env.PORT || 8081;
+var port = process.env.PORT || 8080;
 console.log('listen port ======== ' + port)
 app.listen(port);

@@ -24,17 +24,28 @@ exports.loginPage = function (req, res) {
     })
 };
 
+exports.login = function (req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    Admin.findOne({username: username})
+        .exec(function (err, user) {
+            if (user && user.password == CryptoJS.MD5(password).toString()) {
+                req.session.user = username;
+                return res.redirect('/manage');
+            }
+            res.send('用户名或密码错误');
+        });
+};
 
 
 var url=require("url");
-exports.login = function (req, res) {
+exports.loginURL = function (req, res) {
     var reqObject=url.parse(req.url,true).query;
 
     var username = reqObject.username;
     // console.log('username:' + username);
     //转义，url传递过来的特殊符号无法转换
     var password = reqObject.password.replace(' ','+');
-    console.log('password:'+password);
     Admin.findOne({username: username})
         .exec(function (err, user) {
             //两端系统用的MD5加密，mongodb直接用mysql的数据
